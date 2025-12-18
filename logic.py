@@ -77,8 +77,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     new_description = add_company_name(company,description) + header + ": " + line
 
                 new_data[COLUMN_DESCRIPTION] = new_description
-                new_data[COLUMN_AMOUNT
-                ] = find_amount(line)
+                new_data[COLUMN_AMOUNT] = find_amount(line)
                 new_data[COLUMN_NUM_DISTRIBUTIONS] = num_dist
                 res = pd.concat(
                     [res, new_data.to_frame().T],
@@ -89,9 +88,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             closing_description = add_company_name(company,description) + data[COLUMN_DESCRIPTION]
             data[COLUMN_GL_ACCOUNT] = GL_CLOSING
             data[COLUMN_DESCRIPTION] = closing_description
-            data[COLUMN_AMOUNT
-            ] = '-' + data[COLUMN_AMOUNT
-            ]
+            data[COLUMN_AMOUNT] = '-' + data[COLUMN_AMOUNT]
             data[COLUMN_NUM_DISTRIBUTIONS] = num_dist
             res = pd.concat(
                 [res, data.to_frame().T],
