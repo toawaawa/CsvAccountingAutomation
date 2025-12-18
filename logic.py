@@ -3,10 +3,20 @@ from operator import truediv
 import pandas as pd
 from pathlib import Path
 import re
+
+COLUMN_REFERENCE = "Reference"
+COLUMN_DESCRIPTION = "Description"
+COLUMN_AMOUNT = "   Amount   "
+COLUMN_GL_ACCOUNT = "G/L Account"
+COLUMN_NUM_DISTRIBUTIONS = "Number of Distributions"
+COLUMN_COMPANY = "Unnamed: 4"
+
+GL_CLOSING = 10200
+
 def data_not_processed(df, i):
     if i == len(df) - 1:
         return True
-    return df.loc[i, "Reference"] != df.loc[i + 1, "Reference"] and df.loc[i, "Reference"] != df.loc[i - 1, "Reference"]
+    return df.loc[i, COLUMN_REFERENCE] != df.loc[i + 1, COLUMN_REFERENCE] and df.loc[i, COLUMN_REFERENCE] != df.loc[i - 1, COLUMN_REFERENCE]
 
 def line_count(description):
     return len(description.splitlines())
@@ -35,8 +45,8 @@ def add_company_name(company, description):
     return company + ','
 
 def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    df["Description"] = df["Description"].fillna("")
-    df["Unnamed: 4"] = df["Unnamed: 4"].fillna("")
+    df[COLUMN_DESCRIPTION] = df[COLUMN_DESCRIPTION].fillna("")
+    df[COLUMN_COMPANY] = df[COLUMN_COMPANY].fillna("")
 
     # Initialize result DataFrame with same columns
     res = pd.DataFrame(columns=df.columns)
@@ -44,14 +54,14 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     for i in range(len(df)):
         data = df.loc[i].copy()
 
-        if data_not_processed(df, i) and len(data["Description"]) >= 1:
-            description = data["Description"]
+        if data_not_processed(df, i) and len(data[COLUMN_DESCRIPTION]) >= 1:
+            description = data[COLUMN_DESCRIPTION]
             lines = description.splitlines()
             num_dist = len(lines) if len(lines) >= 1 else 1
 
             header = lines[0]
             header = cleanse_header(header)
-            company = data["Unnamed: 4"]
+            company = data[COLUMN_COMPANY]
             head = 1
             no_header = False
             if '$' in header or len(lines) == 1:
@@ -66,20 +76,23 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                 else:
                     new_description = add_company_name(company,description) + header + ": " + line
 
-                new_data["Description"] = new_description
-                new_data["Amount"] = find_amount(line)
-                new_data['Number of Distributions'] = num_dist
+                new_data[COLUMN_DESCRIPTION] = new_description
+                new_data[COLUMN_AMOUNT
+                ] = find_amount(line)
+                new_data[COLUMN_NUM_DISTRIBUTIONS] = num_dist
                 res = pd.concat(
                     [res, new_data.to_frame().T],
                     ignore_index=True
                 )
 
             # Closing figure
-            closing_description = add_company_name(company,description) + data["Description"]
-            data["G/L Account"] = 10200
-            data["Description"] = closing_description
-            data["   Amount   "] = '-' + data["   Amount   "]
-            data["Number of Distributions"] = num_dist
+            closing_description = add_company_name(company,description) + data[COLUMN_DESCRIPTION]
+            data[COLUMN_GL_ACCOUNT] = GL_CLOSING
+            data[COLUMN_DESCRIPTION] = closing_description
+            data[COLUMN_AMOUNT
+            ] = '-' + data[COLUMN_AMOUNT
+            ]
+            data[COLUMN_NUM_DISTRIBUTIONS] = num_dist
             res = pd.concat(
                 [res, data.to_frame().T],
                 ignore_index=True
