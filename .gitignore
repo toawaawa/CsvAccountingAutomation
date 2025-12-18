@@ -1,0 +1,16 @@
+# --- IDE/PyCharm Specific (Ignore these) ---
+.idea/
+*.iml
+
+# --- Python Specific (Ignore these) ---
+# Compiled python files
+__pycache__/
+*.pyc
+
+# Virtual Environments (If you use them)
+venv/
+.venv/
+env/
+
+# Mac OS junk (If you or teammates use Mac)
+.DS_Store
