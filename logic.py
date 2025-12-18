@@ -10,7 +10,7 @@ COLUMN_AMOUNT = "   Amount   "
 COLUMN_GL_ACCOUNT = "G/L Account"
 COLUMN_NUM_DISTRIBUTIONS = "Number of Distributions"
 COLUMN_COMPANY = "Unnamed: 4"
-
+COLUMN_BALANCE = "Balance"
 GL_CLOSING = 10200
 
 def data_not_processed(df, i):
@@ -44,6 +44,15 @@ def add_company_name(company, description):
         return ""
     return company + ','
 
+def parse_amount(s):
+    if pd.isna(s):
+        return 0.0
+    s = s.replace(',', '')
+    s = s.strip()
+    s = s.replace('- ', '-')
+    s = s.replace('$', '')
+    return float(s)
+
 def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df[COLUMN_DESCRIPTION] = df[COLUMN_DESCRIPTION].fillna("")
     df[COLUMN_COMPANY] = df[COLUMN_COMPANY].fillna("")
@@ -63,6 +72,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             header = cleanse_header(header)
             company = data[COLUMN_COMPANY]
             head = 1
+            curr_balance = 0
             no_header = False
             if '$' in header or len(lines) == 1:
                 no_header = True
@@ -75,14 +85,19 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     new_description = add_company_name(company,description) + line
                 else:
                     new_description = add_company_name(company,description) + header + ": " + line
-
+                if find_amount(line):
+                    new_amount = find_amount(line)
+                else:
+                    new_amount = data[COLUMN_AMOUNT]
                 new_data[COLUMN_DESCRIPTION] = new_description
-                new_data[COLUMN_AMOUNT] = find_amount(line)
+                new_data[COLUMN_AMOUNT] = new_amount
                 new_data[COLUMN_NUM_DISTRIBUTIONS] = num_dist
                 res = pd.concat(
                     [res, new_data.to_frame().T],
                     ignore_index=True
                 )
+                curr_balance += parse_amount(str(new_amount))
+
 
             # Closing figure
             closing_description = add_company_name(company,description) + data[COLUMN_DESCRIPTION]
@@ -90,13 +105,15 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             data[COLUMN_DESCRIPTION] = closing_description
             data[COLUMN_AMOUNT] = '-' + data[COLUMN_AMOUNT]
             data[COLUMN_NUM_DISTRIBUTIONS] = num_dist
+            # Check if the amount equals
+            data[COLUMN_BALANCE] = curr_balance + parse_amount(data[COLUMN_AMOUNT])
             res = pd.concat(
                 [res, data.to_frame().T],
                 ignore_index=True
             )
 
 
-        else:
+        else: #if data already processed -> put the row from old to new file without amendment
             res = pd.concat(
                 [res, data.to_frame().T],
                 ignore_index=True
