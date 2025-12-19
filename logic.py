@@ -42,7 +42,7 @@ def cleanse_header(header):
 def add_company_name(company, description):
     if len(description) > len(company) and description[:len(company)+1] == company + ',':
         return ""
-    return company + ','
+    return company + ', '
 
 def parse_amount(s):
     if pd.isna(s):
@@ -100,13 +100,23 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
             # Closing figure
-            closing_description = add_company_name(company,description) + data[COLUMN_DESCRIPTION]
+            closing_description = add_company_name(company,description)
+            if not no_header:
+                closing_description += header + ' '
+
+            if num_dist <= 3: # 2 items -> list all item on closing
+                for line in lines[head:]:
+                    closing_description += line + '; '
+                closing_description = closing_description[:-2] # remove extra semicolon at the end
+            else :
+                closing_description += "Claim"
+
             data[COLUMN_GL_ACCOUNT] = GL_CLOSING
             data[COLUMN_DESCRIPTION] = closing_description
             data[COLUMN_AMOUNT] = '-' + data[COLUMN_AMOUNT]
             data[COLUMN_NUM_DISTRIBUTIONS] = num_dist
             # Check if the amount equals
-            data[COLUMN_BALANCE] = curr_balance + parse_amount(data[COLUMN_AMOUNT])
+            data[COLUMN_BALANCE] = round(curr_balance + parse_amount(data[COLUMN_AMOUNT]),2)
             res = pd.concat(
                 [res, data.to_frame().T],
                 ignore_index=True
