@@ -56,6 +56,9 @@ def parse_amount(s):
     s = s.replace('$', '')
     return float(s)
 
+# remove empty line and count total number of distribution (uncounted subheadings)
+def remove_empty(lines):
+    return [line for line in lines if line]
 def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df[COLUMN_DESCRIPTION] = df[COLUMN_DESCRIPTION].fillna("")
     df[COLUMN_COMPANY] = df[COLUMN_COMPANY].fillna("")
@@ -68,7 +71,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
         if data_not_processed(df, i) and len(data[COLUMN_DESCRIPTION]) >= 1:
             description = data[COLUMN_DESCRIPTION]
-            lines = description.splitlines()
+            lines = remove_empty(description.splitlines())
             num_dist = len(lines) if len(lines) >= 1 else 1
 
             header = lines[0]
