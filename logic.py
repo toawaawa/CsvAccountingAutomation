@@ -14,9 +14,12 @@ COLUMN_BALANCE = "Balance"
 GL_CLOSING = 10200
 
 def data_not_processed(df, i):
-    if i == len(df) - 1:
-        return True
-    return df.loc[i, COLUMN_REFERENCE] != df.loc[i + 1, COLUMN_REFERENCE] and df.loc[i, COLUMN_REFERENCE] != df.loc[i - 1, COLUMN_REFERENCE]
+    curr = df.loc[i, "Reference"]
+
+    prev_diff = True if i == 0 else curr != df.loc[i - 1, "Reference"]
+    next_diff = True if i == len(df) - 1 else curr != df.loc[i + 1, "Reference"]
+
+    return prev_diff and next_diff
 
 def line_count(description):
     return len(description.splitlines())
