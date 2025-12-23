@@ -14,3 +14,13 @@ env/
 
 # Mac OS junk (If you or teammates use Mac)
 .DS_Store
+
+# --- Data / Generated files ---
+# Private CSV / Excel data
+*.csv
+*.xlsx
+*.xls
+
+# Build / output files (if any)
+build_account_map.py  # only if you want to rebuild locally and not commit
+*.log
