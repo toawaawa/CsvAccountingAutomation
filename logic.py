@@ -4,14 +4,10 @@ import pandas as pd
 from pathlib import Path
 import re
 
-COLUMN_REFERENCE = "Reference"
-COLUMN_DESCRIPTION = "Description"
-COLUMN_AMOUNT = "   Amount   "
-COLUMN_GL_ACCOUNT = "G/L Account"
-COLUMN_NUM_DISTRIBUTIONS = "Number of Distributions"
-COLUMN_COMPANY = "Unnamed: 4"
-COLUMN_BALANCE = "Balance"
-GL_CLOSING = 10200
+from constants import (
+    COLUMN_DESCRIPTION, COLUMN_AMOUNT, COLUMN_GL_ACCOUNT,
+    COLUMN_NUM_DISTRIBUTIONS, COLUMN_COMPANY, GL_CLOSING, COLUMN_BALANCE
+)
 
 def data_not_processed(df, i):
     curr = df.loc[i, "Reference"]
