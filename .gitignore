@@ -22,5 +22,5 @@ env/
 *.xls
 
 # Build / output files (if any)
-build_account_map.py  # only if you want to rebuild locally and not commit
+build_account_map.py
 *.log
