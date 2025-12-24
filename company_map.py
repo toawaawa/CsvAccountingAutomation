@@ -1,4 +1,4 @@
-ACCOUNT_FREQ_MAP = {
+COMPANY_MAP = {
     "7-Style Development (Sugar) Limited": {
         "60100": 1,
     },
