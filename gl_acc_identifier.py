@@ -1,19 +1,19 @@
-from collections import defaultdict
-import pandas as pd
-
-from account_map import ACCOUNT_FREQ_MAP
+from company_map import COMPANY_MAP
+from shopdept_category_map import DEPT_CATEGORY_FREQ_MAP
 
 REQUIRED_PERCENTAGE = 0.7 # 70%
-def get_code(company, description):
+def get_code(shop_dept, category, company):
     code = ""
-    if company not in ACCOUNT_FREQ_MAP:
-        return ""
-    code_map = ACCOUNT_FREQ_MAP[company]
+    code_map = COMPANY_MAP[company]
     total = sum(code_map.values())
     first_code, first_count = next(iter(code_map.items()))
     if first_count / total >= REQUIRED_PERCENTAGE:
         code += first_code
     else:
-        code += "ASK AI"
+        code_map = DEPT_CATEGORY_FREQ_MAP[shop_dept + category]
+        total = sum(code_map.values())
+        first_code, first_count = next(iter(code_map.items()))
+        if first_count / total >= REQUIRED_PERCENTAGE and first_code != code:
+            code += first_code
     return code
-print(get_code("Tsui Chak Company Limited",1))
+print(get_code("YSB", "Salary","Ng Tsui Yi"))
