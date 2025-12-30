@@ -57,9 +57,13 @@ def remove_empty(lines):
     return [line for line in lines if line]
 def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     # Unify format of column name naming
-    df.columns = [COLUMN_DATE, COLUMN_REFERENCE, COLUMN_GL_ACCOUNT, COLUMN_COMPANY,
-                  COLUMN_DESCRIPTION, COLUMN_AMOUNT]
-    
+    df.columns = (
+        df.columns
+        .astype(str)
+        .str.strip()  # remove leading/trailing spaces
+        .str.replace(r"\s+", " ", regex=True)  # collapse multiple spaces
+    )
+
     df[COLUMN_DESCRIPTION] = df[COLUMN_DESCRIPTION].fillna("")
     df[COLUMN_COMPANY] = df[COLUMN_COMPANY].fillna("")
     # Initialize result DataFrame with same columns
