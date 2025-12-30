@@ -8,6 +8,8 @@ from constants import (
     COLUMN_DESCRIPTION, COLUMN_AMOUNT, COLUMN_GL_ACCOUNT,
     COLUMN_NUMBER_OF_DISTRIBUTIONS, COLUMN_COMPANY, GL_CLOSING, COLUMN_BALANCE, COLUMN_DATE, COLUMN_REFERENCE
 )
+from gl_acc_identifier import get_code
+
 
 def data_not_processed(df, i):
     curr = df.loc[i, "Reference"]
@@ -66,6 +68,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     df[COLUMN_DESCRIPTION] = df[COLUMN_DESCRIPTION].fillna("")
     df[COLUMN_COMPANY] = df[COLUMN_COMPANY].fillna("")
+    df[COLUMN_GL_ACCOUNT] = df[COLUMN_GL_ACCOUNT].fillna("")
     # Initialize result DataFrame with same columns
     res = pd.DataFrame(columns=df.columns)
 
@@ -76,7 +79,8 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             description = data[COLUMN_DESCRIPTION]
             lines = remove_empty(description.splitlines())
             num_dist = len(lines) if len(lines) >= 1 else 1
-
+            if data[COLUMN_GL_ACCOUNT] == "":
+                data[COLUMN_GL_ACCOUNT] = get_code(data)
             header = lines[0]
             header = cleanse_header(header)
             company = data[COLUMN_COMPANY]
