@@ -6,7 +6,7 @@ import re
 
 from constants import (
     COLUMN_DESCRIPTION, COLUMN_AMOUNT, COLUMN_GL_ACCOUNT,
-    COLUMN_NUM_DISTRIBUTIONS, COLUMN_COMPANY, GL_CLOSING, COLUMN_BALANCE
+    COLUMN_NUMBER_OF_DISTRIBUTIONS, COLUMN_COMPANY, GL_CLOSING, COLUMN_BALANCE, COLUMN_DATE, COLUMN_REFERENCE
 )
 
 def data_not_processed(df, i):
@@ -56,9 +56,12 @@ def parse_amount(s):
 def remove_empty(lines):
     return [line for line in lines if line]
 def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    # Unify format of column name naming
+    df.columns = [COLUMN_DATE, COLUMN_REFERENCE, COLUMN_GL_ACCOUNT, COLUMN_COMPANY,
+                  COLUMN_DESCRIPTION, COLUMN_AMOUNT]
+    
     df[COLUMN_DESCRIPTION] = df[COLUMN_DESCRIPTION].fillna("")
     df[COLUMN_COMPANY] = df[COLUMN_COMPANY].fillna("")
-
     # Initialize result DataFrame with same columns
     res = pd.DataFrame(columns=df.columns)
 
@@ -93,7 +96,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     new_amount = data[COLUMN_AMOUNT]
                 new_data[COLUMN_DESCRIPTION] = new_description
                 new_data[COLUMN_AMOUNT] = new_amount
-                new_data[COLUMN_NUM_DISTRIBUTIONS] = num_dist
+                new_data[COLUMN_NUMBER_OF_DISTRIBUTIONS] = num_dist
                 res = pd.concat(
                     [res, new_data.to_frame().T],
                     ignore_index=True
@@ -116,7 +119,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             data[COLUMN_GL_ACCOUNT] = GL_CLOSING
             data[COLUMN_DESCRIPTION] = closing_description
             data[COLUMN_AMOUNT] = '-' + data[COLUMN_AMOUNT]
-            data[COLUMN_NUM_DISTRIBUTIONS] = num_dist
+            data[COLUMN_NUMBER_OF_DISTRIBUTIONS] = num_dist
             # Check if the amount equals
             data[COLUMN_BALANCE] = round(curr_balance + parse_amount(data[COLUMN_AMOUNT]),2)
             res = pd.concat(
