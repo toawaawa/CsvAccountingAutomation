@@ -1,7 +1,4 @@
-from operator import truediv
-
 import pandas as pd
-from pathlib import Path
 import re
 
 from constants import (
@@ -28,14 +25,23 @@ def find_amount(description):
 
     description = str(description)
 
+    # Find all $ amounts
     matches = re.findall(r'\$([\d,]+(?:\.\d+)?)', description)
-
     if not matches:
         return None
 
     amounts = [float(m.replace(',', '')) for m in matches]
 
-    return max(amounts)
+    # Case 1: '=' appears before a '$'
+    eq_pos = description.find('=')
+    dollar_pos = description.find('$')
+
+    if eq_pos != -1 and dollar_pos != -1 and eq_pos < dollar_pos:
+        # Return the LAST amount (result of equation)
+        return float(amounts[-1])
+
+    # Case 2: sum of all amounts
+    return float(sum(amounts))
 
 def cleanse_header(header):
     return re.sub(r'[\s:\-]+$', '', header)
@@ -57,6 +63,7 @@ def parse_amount(s):
 # remove empty line and count total number of distribution (uncounted subheadings)
 def remove_empty(lines):
     return [line for line in lines if line]
+
 def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     # Unify format of column name naming
     df.columns = (
