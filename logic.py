@@ -74,17 +74,19 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         .str.strip()  # remove leading/trailing spaces
         .str.replace(r"\s+", " ", regex=True)  # collapse multiple spaces
     )
-
-    no_company_name = False
+    print(df.columns)
+    no_company_name = True
 
     df[COLUMN_DESCRIPTION] = df[COLUMN_DESCRIPTION].fillna("")
-    if COLUMN_COMPANY in df.columns:
+    # If dont have a column for company name, ignore
+    if  COLUMN_COMPANY in df.columns:
         df[COLUMN_COMPANY] = df[COLUMN_COMPANY].fillna("")
-        no_company_name = True
+        no_company_name = False
+
     df[COLUMN_GL_ACCOUNT] = df[COLUMN_GL_ACCOUNT].fillna("")
     # Initialize result DataFrame with same columns
     res = pd.DataFrame(columns=df.columns)
-
+    print("no company name:", no_company_name)
     for i in range(len(df)):
         data = df.loc[i].copy()
 
