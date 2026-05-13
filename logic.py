@@ -49,6 +49,8 @@ def cleanse_header(header):
 def add_company_name(company, description):
     if len(description) > len(company) and description[:len(company)+1] == company + ',':
         return ""
+    if company == "":
+        return ""
     return company + ', '
 
 def parse_amount(s):
@@ -73,8 +75,12 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         .str.replace(r"\s+", " ", regex=True)  # collapse multiple spaces
     )
 
+    no_company_name = False
+
     df[COLUMN_DESCRIPTION] = df[COLUMN_DESCRIPTION].fillna("")
-    df[COLUMN_COMPANY] = df[COLUMN_COMPANY].fillna("")
+    if COLUMN_COMPANY in df.columns:
+        df[COLUMN_COMPANY] = df[COLUMN_COMPANY].fillna("")
+        no_company_name = True
     df[COLUMN_GL_ACCOUNT] = df[COLUMN_GL_ACCOUNT].fillna("")
     # Initialize result DataFrame with same columns
     res = pd.DataFrame(columns=df.columns)
@@ -90,7 +96,10 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                 data[COLUMN_GL_ACCOUNT] = get_code(data)
             header = lines[0]
             header = cleanse_header(header)
-            company = data[COLUMN_COMPANY]
+            if no_company_name:
+                company = ""
+            else:
+                company = data[COLUMN_COMPANY]
             head = 1
             curr_balance = 0
             no_header = False
