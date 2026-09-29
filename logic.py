@@ -89,7 +89,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     print("no company name:", no_company_name)
     for i in range(len(df)):
         data = df.loc[i].copy()
-        data = data.astype(str) # force all data be string to avoid trouble
+        data[COLUMN_AMOUNT] = data[COLUMN_AMOUNT].astype(str) # force all data be string to avoid trouble
 
         if data_not_processed(df, i) and len(data[COLUMN_DESCRIPTION]) >= 1:
             description = data[COLUMN_DESCRIPTION]
