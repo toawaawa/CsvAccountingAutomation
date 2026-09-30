@@ -4,7 +4,7 @@ User guide:
    (revisit the website if it is updated)
 2. Input the raw csv accounting file (must be in utf-8 file!)
    If there is error in this step, the file is not in utf-8 encoding. Change it back to utf-8 before continue.
-   Guide: Import to Excel, and select export in csv. Then the file would be in utf-8.
+   Guide: Import to Excel, and select export in csv UTF-8. Then the file would be in utf-8.
 3. Press Process CSV
 4. Press Download cleaned CSV
 Steps left to users:
