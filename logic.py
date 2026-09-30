@@ -118,9 +118,9 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                 else:
                     new_description = add_company_name(company,description) + header + ": " + line
                 if find_amount(line):
-                    new_amount = find_amount(line)
+                    new_amount = find_amount(line) # new_amount is float
                 else:
-                    new_amount = data[COLUMN_AMOUNT]
+                    new_amount = parse_amount(data[COLUMN_AMOUNT])
                 new_data[COLUMN_DESCRIPTION] = new_description
                 new_data[COLUMN_AMOUNT] = new_amount
                 new_data[COLUMN_NUMBER_OF_DISTRIBUTIONS] = num_dist
@@ -129,7 +129,7 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     ignore_index=True
                 )
                 print("Amount:", data[COLUMN_AMOUNT])
-                curr_balance += parse_amount(new_amount)
+                curr_balance += new_amount
 
 
             # Closing figure
