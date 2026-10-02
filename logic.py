@@ -110,14 +110,14 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                 no_header = True
                 head = 0
                 num_dist += 1
-            # Process line 2 to end
+            # Process line 2 to end (in one cell)
             for line in lines[head:]:
                 new_data = data.copy()
                 if no_header:
                     new_description = add_company_name(company,description) + line
                 else:
                     new_description = add_company_name(company,description) + header + ": " + line
-                if find_amount(line):
+                if find_amount(line) and len(lines) != 1: # 20261002: avoid changing the amount if description only have onr line
                     new_amount = find_amount(line) # new_amount is float
                 else:
                     new_amount = parse_amount(data[COLUMN_AMOUNT])
